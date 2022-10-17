@@ -25,7 +25,8 @@
     "compile": "npx babel src --source-maps --out-dir lib",
     "minify": "npx uglifyjs dist/kalman.js --beautify \"beautify=false, preamble='/*kalmanjs, Wouter Bulten, MIT, https://github.com/wouterbulten/kalmanjs */'\" --compress --source-map \"content='dist/kalman.js.map'\" --mangle -o dist/kalman.min.js",
     "build": "npx rollup -c",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "test": "node --experimental-modules ./test/test.mjs"
   },
   "keywords": [
     "kalman",

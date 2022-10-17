@@ -27,8 +27,9 @@ export default class KalmanFilter {
     this.A = A;
     this.C = C;
     this.B = B;
-    this.cov = NaN;
+
     this.x = NaN; // estimated signal without noise
+    this.cov = NaN;
   }
 
   /**
@@ -76,7 +77,7 @@ export default class KalmanFilter {
   uncertainty() {
     return ((this.A * this.cov) * this.A) + this.R;
   }
-  
+
   /**
   * Return the last filtered measurement
   * @return {Number}

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"
+      integrity="sha512-s+xg36jbIujB2S2VKfpGmlC3T5V2TF3lY48DX7u2r9XzGzgPsa6wTpOQA7J9iffvdeBN0q9tKzRxVxw1JviZPg=="
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+      integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/kalmanjs@1.1.0/lib/kalman.min.js"></script>
+  </head>
+  <body>
+    <div id="chart-growth-kalman-data-legend"></div>
+    <canvas id="chart-growth-kalman-data"></canvas>
+    <script>
+      // INPUT DATA
+
+      const noisyDataLinear = [
+        2070, 2243, 2246, 2244, 2243, 2243, 2243, 2244, 2244, 2245, 2245, 2245,
+        2245, 2245, 2246, 2246, 2246, 2246, 2246, 2246, 2246, 2246, 2246, 2246,
+        2245, 2245, 2246, 2246, 2246, 2245, 2245, 2244, 2179, 2000, 1942, 1937,
+        1905, 2123, 2233, 2241, 2245, 2246, 2246, 2246, 2247, 2245, 1983, 1879,
+        2026, 2129, 2137, 2142, 2144, 2143, 2141, 2140, 2139, 2139, 2143, 2150,
+        2152, 2146, 2139, 2150, 2155, 2154, 2143, 2070, 1972, 2199, 2240, 2244,
+        2247, 2249, 2250, 2250, 2250, 2250, 2251, 2245, 2228, 2221, 2218, 2217,
+        2216, 2216, 2215, 2215, 2215, 2214, 2214, 2214, 2214, 2214, 2214, 2214,
+      ];
+
+      // KALMAN FILTERING DATA
+
+      const growthFilter = new KalmanFilter({
+        R: 0.0001,
+        Q: 300,
+        A: 1.0,
+        B: 0,
+        C: 1.0
+      });
+      const dataGrowthKalman = noisyDataLinear.map(function (v) {
+        return growthFilter.filter(v);
+      });
+
+      // PLOTTING DATA
+
+      const plotDataGrowthKalman = {
+        labels: noisyDataLinear.map(function (y, i) {
+          return i;
+        }),
+        datasets: [
+          {
+            label: "Kalman estimate with A=1.0",
+            fill: false,
+            backgroundColor: "rgba(220,220,220,0)",
+            borderColor: "rgba(55,14,156,0.4)",
+            pointBorderColor: "rgba(55,14,156,1)",
+            pointBackgroundColor: "#fff",
+            pointHoverBackgroundColor: "#fff",
+            pointHoverBorderColor: "rgba(220,220,220,1)",
+            data: dataGrowthKalman,
+          },
+          {
+            label: "Noisy data",
+            fill: false,
+            backgroundColor: "rgba(220,220,220,0)",
+            borderColor: "rgba(201,48,119,0)",
+            pointBorderColor: "rgba(201,48,119,1.0)",
+            pointBackgroundColor: "#fff",
+            pointHoverBackgroundColor: "#fff",
+            pointHoverBorderColor: "rgba(220,220,220,1)",
+            data: noisyDataLinear,
+          },
+        ],
+      };
+
+      $(window).ready(function () {
+        const ctx = $("#chart-growth-kalman-data").get(0).getContext("2d");
+        const growthKalmanChart = new Chart(ctx, {
+          type: "line",
+          data: plotDataGrowthKalman,
+        });
+        $("#chart-growth-kalman-data-legend").html(
+          growthKalmanChart.generateLegend()
+        );
+      });
+    </script>
+  </body>
+</html>
